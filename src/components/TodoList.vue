@@ -11,7 +11,7 @@
                 <input type="checkbox" v-model="item.isTaskDone" :value="$emit('toggleTask', [item.id, item.isTaskDone])">
             </div>
             <p class="card-text">{{ item.username }}</p>
-            <button class="btn btn-danger" v-on:click="$emit('delete', [item.id])">Delete Task</button>
+            <button class="btn btn-danger" v-on:click="deleteTodo(index, id)">Delete Task</button>
           </div>
         </div>
       </div>
@@ -21,6 +21,8 @@
 </template>
 
 <script>
+    import axios from 'axios'
+
     export default {
         data() {
             return {
@@ -46,5 +48,27 @@
                 ]
             }
         },
+        methods: {
+            async getTodosFromLaravel() {
+                return await axios.get('http://localhost:4000/todos')
+                    .then((response) => {
+                        this.todos = response.data
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+            },
+
+            async deleteTodo(index, id) {
+                this.todos.removeAtIndex(index)
+                return await axios.delete('http://localhost:4000/todo/' + id)
+                    .then(() => {
+
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+            }
+        }
     }
 </script>

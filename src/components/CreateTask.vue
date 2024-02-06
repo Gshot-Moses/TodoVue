@@ -1,5 +1,5 @@
 <template>
-    <h3>Create new Todo</h3>
+    <h5>Create new Todo</h5>
     <form>
     <div class="mb-3">
       <label for="title" class="form-label">Title:</label>
@@ -7,7 +7,9 @@
     </div>
     <div class="mb-3">
       <label for="username" class="form-label">Username:</label>
-      <input v-model="username" type="text" class="form-control" id="username" name="username" required>
+      <select class="form-group">
+        <option v-for="(user, index) in users" :key="index" :value="user.username">{{ user.username }}</option>
+      </select>
     </div>
     <div class="mb-3 form-check">
       <input v-model="isTaskDone" :value="statusChange" type="checkbox" class="form-check-input" id="isTaskDone" name="isTaskDone">
@@ -18,12 +20,15 @@
 </template>
 
 <script>
+import axios from 'axios';
+
     export default {
         data() {
             return {
                 title: "",
                 username: "",
                 isTaskDone: false,
+                users: []
             }
         },
         watch: {
@@ -32,7 +37,30 @@
             }
         },
         methods: {
+            async getUsers() {
+                return await axios.get('https://jsonplaceholder.typicode.com/users')
+                    .then((response) => {
+                        this.users = response.data
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+            },
+            async createTodo() {
+                return axios.post(
+                    'http://localhost:4000/todo', {}
+                    )
+                    .then((response) => {
 
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+            }
+        },
+        async mounted() {
+            await this.getUsers() 
+            console.log(this.users)
         }
     }
 </script>
